@@ -1,3 +1,7 @@
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -7,6 +11,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import static sun.plugin.javascript.navig.JSType.Element;
 
 @WebServlet(name = "MyServlet", value = "/test")
 public class MyServlet extends HttpServlet {
@@ -26,9 +40,9 @@ public class MyServlet extends HttpServlet {
             // buffer.append(line);
             message += line;
         }
-        String requiredString2 = message.substring(message.indexOf("<ubiNum>") + 2, message.indexOf("</ubiNum>"));
-
-        int num = Integer.parseInt(requiredString2);
+       // String requiredString2 = message.substring(message.indexOf("<ubiNum>") + 2, message.indexOf("</ubiNum>"));
+        String requestQueueName = getString("ubiNum", request);
+        int num = Integer.parseInt(requestQueueName);
 
         response.setContentType ("text/xml; charset=UTF-8");
 
@@ -37,6 +51,7 @@ public class MyServlet extends HttpServlet {
         if (num > 10){
             s = "ok";
         }else s = "fail";
+
         String line2 = String.format("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
                 "<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n" +
                 "  <soap12:Body>\n" +
@@ -77,5 +92,17 @@ public class MyServlet extends HttpServlet {
 
 
     }
+    protected String getString(String tagName, HttpServletRequest element) {
+        NodeList list = element.getElementsByTagName(tagName);
+        if (list != null && list.getLength() > 0) {
+            NodeList subList = list.item(0).getChildNodes();
 
+            if (subList != null && subList.getLength() > 0) {
+                return subList.item(0).getNodeValue();
+            }
+        }
+
+        return null;
+    }
 }
+
