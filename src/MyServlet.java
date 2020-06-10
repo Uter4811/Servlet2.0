@@ -37,7 +37,14 @@ public class MyServlet extends HttpServlet {
         if (num > 10){
             s = "ok";
         }else s = "fail";
-        String line2 = String.format("<status> %s </status>", s);
+        String line2 = String.format("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n" +
+                "  <soap12:Body>\n" +
+                "    <NumberToWords xmlns=\"http://www.dataaccess.com/webservicesserver/\">\n" +
+                "      <status>%s/status>\n" +
+                "    </NumberToWords>\n" +
+                "  </soap12:Body>\n" +
+                "</soap12:Envelope>\n", s);
 
         PrintWriter pw = response.getWriter();
         pw.write(line2);
